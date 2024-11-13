@@ -2,8 +2,8 @@
 	"$schema": "https://mintlify.com/schema.json",
 	"name": "Starter Kit",
 	"logo": {
-		"dark": "/logo/dark.svg",
-		"light": "/logo/light.svg"
+		"dark": "/logo/synpress-logo.png",
+		"light": "/logo/synpress-logo.png"
 	},
 	"favicon": "/favicon.svg",
 	"colors": {
@@ -18,92 +18,52 @@
 	"topbarLinks": [
 		{
 			"name": "Support",
-			"url": "mailto:hi@mintlify.com"
+			"url": "https://discord.gg/XhZKSRGtWc"
 		}
 	],
-	"topbarCtaButton": {
-		"name": "Dashboard",
-		"url": "https://dashboard.mintlify.com"
-	},
 	"tabs": [
 		{
-			"name": "API Reference",
-			"url": "api-reference"
-		}
-	],
-	"anchors": [
-		{
-			"name": "OLD - Documentation",
-			"icon": "book-open-cover",
-			"url": "https://mintlify.com/docs"
-		},
-		{
-			"name": "OLD - Community",
-			"icon": "slack",
-			"url": "https://mintlify.com/community"
-		},
-		{
-			"name": "OLD - Blog",
-			"icon": "newspaper",
-			"url": "https://mintlify.com/blog"
+			"name": "API",
+			"url": "api-synpress"
 		}
 	],
 	"navigation": [
 		{
-			"group": "Getting Started",
+			"group": "Introduction",
 			"pages": [
-				"getting-started/getting-started",
-				"getting-started/introduction",
-				"getting-started/known-issues",
-				"getting-started/migration-guide",
-				"getting-started/platform-compatibility",
-				"getting-started/setup-cypress",
-				"getting-started/setup-playwright",
-				"getting-started/typescript"
+				"docs/introduction",
+				"docs/getting-started",
+				"docs/setup-playwright",
+				"docs/setup-cypress",
+				"docs/migration-guide",
+				"docs/typescript",
+				"docs/platform-compatibility",
+				"docs/known-issues"
 			]
 		},
 		{
 			"group": "Guides",
 			"pages": [
-				"guides/ci",
-				"guides/cli",
-				"guides/fixtures",
-				"guides/playwright",
-				"guides/wallet-cache",
-				"guides/wallet-setup-debug"
+				"docs/guides/wallet-cache",
+				"docs/guides/wallet-setup-debug",
+				"docs/guides/cli",
+				"docs/guides/playwright",
+				"docs/guides/fixtures",
+				"docs/guides/ci"
 			]
 		},
 		{
-			"group": "OLD - Getting Started",
-			"pages": ["quickstart", "development"]
+			"group": "Cypress",
+			"pages": ["api-synpress/cypress/Metamask"]
 		},
 		{
-			"group": "OLD - Essentials",
-			"pages": [
-				"essentials/markdown",
-				"essentials/code",
-				"essentials/images",
-				"essentials/settings",
-				"essentials/navigation",
-				"essentials/reusable-snippets"
-			]
-		},
-		{
-			"group": "API Documentation",
-			"pages": ["api-reference/introduction"]
-		},
-		{
-			"group": "Endpoint Examples",
-			"pages": [
-				"api-reference/endpoint/get",
-				"api-reference/endpoint/create",
-				"api-reference/endpoint/delete"
-			]
+			"group": "Playwright",
+			"pages": ["api-synpress/playwright/EthereumWalletMock"]
 		}
 	],
 	"footerSocials": {
-		"x": "https://x.com/mintlify",
-		"github": "https://github.com/mintlify",
-		"linkedin": "https://www.linkedin.com/company/mintsearch"
+		"github": "https://github.com/Synthetixio/synpress/tree/dev",
+		"discord": "https://discord.gg/XhZKSRGtWc",
+		"x": "https://twitter.com/Synpress_"
 	}
 }
