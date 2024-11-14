@@ -24,7 +24,7 @@
 	"tabs": [
 		{
 			"name": "API",
-			"url": "api-synpress"
+			"url": "api"
 		}
 	],
 	"navigation": [
@@ -53,12 +53,25 @@
 			]
 		},
 		{
+			"group": "Functions",
+			"pages": ["api/functions/defineWalletSetup", "api/functions/testWithSynpress"]
+		},
+		{
 			"group": "Cypress",
-			"pages": ["api-synpress/cypress/Metamask"]
+			"pages": [
+				"api/cypress/index",
+				"api/cypress/classes/Metamask",
+				"api/cypress/functions/configureSynpressForEthereumWalletMock",
+				"api/cypress/functions/configureSynpressForMetaMask",
+				"api/cypress/functions/initMetaMask",
+				"api/cypress/support/functions/mockEthereum",
+				"api/cypress/support/functions/synpressCommandsForEthereumWalletMock",
+				"api/cypress/support/functions/synpressCommandsForMetaMask"
+			]
 		},
 		{
 			"group": "Playwright",
-			"pages": ["api-synpress/playwright/EthereumWalletMock"]
+			"pages": ["api/playwright/EthereumWalletMock"]
 		}
 	],
 	"footerSocials": {
