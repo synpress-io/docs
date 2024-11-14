@@ -3,7 +3,7 @@
 	"name": "Starter Kit",
 	"logo": {
 		"dark": "/logo/synpress-logo.png",
-		"light": "/logo/synpress-logo.png"
+		"light": "/logo/s-logo-3.png"
 	},
 	"favicon": "/favicon.svg",
 	"colors": {
@@ -15,6 +15,7 @@
 			"to": "#07C983"
 		}
 	},
+	"versions": ["4.0.3"],
 	"topbarLinks": [
 		{
 			"name": "Support",
@@ -25,6 +26,10 @@
 		{
 			"name": "API",
 			"url": "api"
+		},
+		{
+			"name": "Examples",
+			"url": "https://github.com/Synthetixio/synpress/tree/dev/examples"
 		}
 	],
 	"navigation": [
@@ -60,13 +65,9 @@
 			"group": "Cypress",
 			"pages": [
 				"api/cypress/index",
-				"api/cypress/classes/Metamask",
-				"api/cypress/functions/configureSynpressForEthereumWalletMock",
-				"api/cypress/functions/configureSynpressForMetaMask",
-				"api/cypress/functions/initMetaMask",
-				"api/cypress/support/functions/mockEthereum",
-				"api/cypress/support/functions/synpressCommandsForEthereumWalletMock",
-				"api/cypress/support/functions/synpressCommandsForMetaMask"
+				"api/cypress/classes/index",
+				"api/cypress/functions/index",
+				"api/cypress/support/functions/index"
 			]
 		},
 		{
