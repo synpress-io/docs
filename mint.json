@@ -74,16 +74,9 @@
 			"group": "Playwright",
 			"pages": [
 				"api/playwright/index",
-				"api/playwright/classes/EthereumWalletMock",
-				"api/playwright/classes/MetaMask",
-				"api/playwright/variables/DEFAULT_NETWORK_ID",
-				"api/playwright/variables/PRIVATE_KEY",
-				"api/playwright/variables/web3MockPath",
-				"api/playwright/functions/ethereumWalletMockFixtures",
-				"api/playwright/functions/getExtensionId",
-				"api/playwright/functions/metaMaskFixtures",
-				"api/playwright/functions/mockEthereum",
-				"api/playwright/functions/unlockForFixture"
+				"api/playwright/classes/index",
+				"api/playwright/variables/index",
+				"api/playwright/functions/index"
 			]
 		}
 	],
