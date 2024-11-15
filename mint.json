@@ -18,10 +18,21 @@
 	"versions": ["4.0.3"],
 	"topbarLinks": [
 		{
-			"name": "Support",
+			"name": "Github",
+			"url": "https://github.com/Synthetixio/synpress/tree/dev"
+		},
+		{
+			"name": "Discord",
 			"url": "https://discord.gg/XhZKSRGtWc"
+		},
+		{
+			"name": "X",
+			"url": "https://twitter.com/Synpress_"
 		}
 	],
+	"primaryTab": {
+		"name": "Docs"
+	},
 	"tabs": [
 		{
 			"name": "API",
@@ -32,17 +43,33 @@
 			"url": "https://github.com/Synthetixio/synpress/tree/dev/examples"
 		}
 	],
-	"primaryTab": {
-		"name": "Documentation"
-	},
+	"anchors": [
+		{
+			"name": "GitHub",
+			"icon": "github",
+			"url": "https://github.com/Synthetixio/synpress/tree/dev"
+		},
+		{
+			"name": "Discord",
+			"icon": "discord",
+			"url": "https://discord.gg/XhZKSRGtWc"
+		},
+
+		{
+			"name": "X",
+			"icon": "x-twitter",
+			"url": "https://twitter.com/Synpress_"
+		}
+	],
 	"navigation": [
 		{
 			"group": "Introduction",
 			"pages": [
 				"docs/introduction",
-				"docs/getting-started",
-				"docs/setup-playwright",
-				"docs/setup-cypress",
+				{
+					"group": "Getting Started",
+					"pages": ["docs/getting-started", "docs/setup-playwright", "docs/setup-cypress"]
+				},
 				"docs/migration-guide",
 				"docs/typescript",
 				"docs/platform-compatibility",
@@ -61,28 +88,83 @@
 			]
 		},
 		{
-			"group": "Functions",
+			"group": "Index",
 			"pages": [
-				"api-reference/functions/defineWalletSetup",
-				"api-reference/functions/testWithSynpress"
+				{
+					"group": "Functions",
+					"pages": [
+						"api-reference/functions/index",
+						"api-reference/functions/defineWalletSetup",
+						"api-reference/functions/testWithSynpress"
+					]
+				}
 			]
 		},
 		{
 			"group": "Cypress",
 			"pages": [
 				"api-reference/cypress/index",
-				"api-reference/cypress/classes/index",
-				"api-reference/cypress/functions/index",
-				"api-reference/cypress/support/functions/index"
+				{
+					"group": "Classes",
+					"pages": ["api-reference/cypress/classes/index", "api-reference/cypress/classes/MetaMask"]
+				},
+				{
+					"group": "Functions",
+					"pages": [
+						"api-reference/cypress/functions/index",
+						"api-reference/cypress/functions/configureSynpressForEthereumWalletMock",
+						"api-reference/cypress/functions/configureSynpressForMetaMask",
+						"api-reference/cypress/functions/initMetaMask"
+					]
+				},
+				{
+					"group": "Support",
+					"pages": [
+						{
+							"group": "Functions",
+							"pages": [
+								"api-reference/cypress/support/functions/index",
+								"api-reference/cypress/support/functions/mockEthereum",
+								"api-reference/cypress/support/functions/synpressCommandsForEthereumWalletMock",
+								"api-reference/cypress/support/functions/synpressCommandsForMetaMask"
+							]
+						}
+					]
+				}
 			]
 		},
 		{
 			"group": "Playwright",
 			"pages": [
 				"api-reference/playwright/index",
-				"api-reference/playwright/classes/index",
-				"api-reference/playwright/variables/index",
-				"api-reference/playwright/functions/index"
+				{
+					"group": "Classes",
+					"pages": [
+						"api-reference/playwright/classes/index",
+						"api-reference/playwright/classes/EthereumWalletMock",
+						"api-reference/playwright/classes/MetaMask"
+					]
+				},
+				{
+					"group": "Variables",
+					"pages": [
+						"api-reference/playwright/variables/index",
+						"api-reference/playwright/variables/DEFAULT_NETWORK_ID",
+						"api-reference/playwright/variables/PRIVATE_KEY",
+						"api-reference/playwright/variables/web3MockPath"
+					]
+				},
+				{
+					"group": "Functions",
+					"pages": [
+						"api-reference/playwright/functions/index",
+						"api-reference/playwright/functions/ethereumWalletMockFixtures",
+						"api-reference/playwright/functions/getExtensionId",
+						"api-reference/playwright/functions/metaMaskFixtures",
+						"api-reference/playwright/functions/mockEthereum",
+						"api-reference/playwright/functions/unlockForFixture"
+					]
+				}
 			]
 		}
 	],
