@@ -25,7 +25,7 @@
 	"tabs": [
 		{
 			"name": "API",
-			"url": "api"
+			"url": "api-reference"
 		},
 		{
 			"name": "Examples",
@@ -59,24 +59,27 @@
 		},
 		{
 			"group": "Functions",
-			"pages": ["api/functions/defineWalletSetup", "api/functions/testWithSynpress"]
+			"pages": [
+				"api-reference/functions/defineWalletSetup",
+				"api-reference/functions/testWithSynpress"
+			]
 		},
 		{
 			"group": "Cypress",
 			"pages": [
-				"api/cypress/index",
-				"api/cypress/classes/index",
-				"api/cypress/functions/index",
-				"api/cypress/support/functions/index"
+				"api-reference/cypress/index",
+				"api-reference/cypress/classes/index",
+				"api-reference/cypress/functions/index",
+				"api-reference/cypress/support/functions/index"
 			]
 		},
 		{
 			"group": "Playwright",
 			"pages": [
-				"api/playwright/index",
-				"api/playwright/classes/index",
-				"api/playwright/variables/index",
-				"api/playwright/functions/index"
+				"api-reference/playwright/index",
+				"api-reference/playwright/classes/index",
+				"api-reference/playwright/variables/index",
+				"api-reference/playwright/functions/index"
 			]
 		}
 	],
