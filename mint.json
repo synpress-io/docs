@@ -1,91 +1,88 @@
 {
-  "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
-  "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
-  },
-  "favicon": "/favicon.svg",
-  "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
-    "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
-    }
-  },
-  "topbarLinks": [
-    {
-      "name": "Support",
-      "url": "mailto:hi@mintlify.com"
-    }
-  ],
-  "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
-  },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    }
-  ],
-  "anchors": [
-    {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
-    },
-    {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
-    }
-  ],
-  "navigation": [
-    {
-      "group": "Get Started",
-      "pages": [
-        "introduction",
-        "quickstart",
-        "development"
-      ]
-    },
-    {
-      "group": "Essentials",
-      "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
-      ]
-    },
-    {
-      "group": "API Documentation",
-      "pages": [
-        "api-reference/introduction"
-      ]
-    },
-    {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
-      ]
-    }
-  ],
-  "footerSocials": {
-    "x": "https://x.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
-  }
+	"$schema": "https://mintlify.com/schema.json",
+	"name": "Starter Kit",
+	"logo": {
+		"dark": "/logo/synpress-logo.png",
+		"light": "/logo/s-logo-3.png"
+	},
+	"favicon": "/favicon.svg",
+	"colors": {
+		"primary": "#0D9373",
+		"light": "#07C983",
+		"dark": "#0D9373",
+		"anchors": {
+			"from": "#0D9373",
+			"to": "#07C983"
+		}
+	},
+	"versions": ["4.0.3"],
+	"topbarLinks": [
+		{
+			"name": "Support",
+			"url": "https://discord.gg/XhZKSRGtWc"
+		}
+	],
+	"tabs": [
+		{
+			"name": "API",
+			"url": "api"
+		},
+		{
+			"name": "Examples",
+			"url": "https://github.com/Synthetixio/synpress/tree/dev/examples"
+		}
+	],
+	"navigation": [
+		{
+			"group": "Introduction",
+			"pages": [
+				"docs/introduction",
+				"docs/getting-started",
+				"docs/setup-playwright",
+				"docs/setup-cypress",
+				"docs/migration-guide",
+				"docs/typescript",
+				"docs/platform-compatibility",
+				"docs/known-issues"
+			]
+		},
+		{
+			"group": "Guides",
+			"pages": [
+				"docs/guides/wallet-cache",
+				"docs/guides/wallet-setup-debug",
+				"docs/guides/cli",
+				"docs/guides/playwright",
+				"docs/guides/fixtures",
+				"docs/guides/ci"
+			]
+		},
+		{
+			"group": "Functions",
+			"pages": ["api/functions/defineWalletSetup", "api/functions/testWithSynpress"]
+		},
+		{
+			"group": "Cypress",
+			"pages": [
+				"api/cypress/index",
+				"api/cypress/classes/index",
+				"api/cypress/functions/index",
+				"api/cypress/support/functions/index"
+			]
+		},
+		{
+			"group": "Playwright",
+			"pages": [
+				"api/playwright/index",
+				"api/playwright/classes/index",
+				"api/playwright/variables/index",
+				"api/playwright/functions/index"
+			]
+		}
+	],
+	"footerSocials": {
+		"github": "https://github.com/Synthetixio/synpress/tree/dev",
+		"discord": "https://discord.gg/XhZKSRGtWc",
+		"x": "https://twitter.com/Synpress_"
+	}
 }
