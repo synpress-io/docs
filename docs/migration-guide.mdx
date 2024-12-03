@@ -56,7 +56,7 @@ The installation process remains the same in v4.
      import { defineConfig } from "cypress";
 
      export default defineConfig({
-       chromeWebSecurity: false,
+       chromeWebSecurity: true,
        e2e: {
          baseUrl: "http://localhost:9999",
          specPattern: "test/cypress/**/*.cy.{js,jsx,ts,tsx}",
