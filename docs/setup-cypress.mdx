@@ -27,7 +27,7 @@ npm install --save-dev cypress @synthetixio/synpress@latest
    import { defineConfig } from "cypress";
 
    export default defineConfig({
-     chromeWebSecurity: false,
+     chromeWebSecurity: true,
      e2e: {
        baseUrl: "http://localhost:9999",
        specPattern: "test/cypress/**/*.cy.{js,jsx,ts,tsx}",
