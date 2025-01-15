@@ -31,7 +31,8 @@ This flag is used to force the cache to rebuild. By default, the cache can only 
 Consider this example setup file:
 
 ```typescript
-import { MetaMask, defineWalletSetup } from '@synthetixio/synpress'
+import { defineWalletSetup } from '@synthetixio/synpress'
+import { MetaMask } from '@synthetixio/synpress/playwright'
 import 'dotenv/config'
 
 const SEED_PHRASE = process.env.SEED_PHRASE

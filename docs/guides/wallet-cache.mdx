@@ -31,14 +31,16 @@ Next, you need to define the seed phrase and password that will be used to impor
 
 <CodeGroup>
 ```typescript Constants
-import { MetaMask, defineWalletSetup } from '@synthetixio/synpress'
+import { defineWalletSetup } from '@synthetixio/synpress'
+import { MetaMask } from '@synthetixio/synpress/playwright'
 
 const SEED_PHRASE = 'test test test test test test test test test test test junk' // [!code focus]
 const PASSWORD = 'Password123' // [!code focus]
 ```
 
 ```typescript Environment variables
-import { MetaMask, defineWalletSetup } from '@synthetixio/synpress'
+import { defineWalletSetup } from '@synthetixio/synpress'
+import { MetaMask } from '@synthetixio/synpress/playwright'
 import 'dotenv/config' // [!code focus]
 
 const SEED_PHRASE = process.env.SEED_PHRASE // [!code focus]
@@ -59,10 +61,10 @@ The setup function is where the magic happens. Contents of this function will be
 Here's how you can import a wallet with MetaMask:
 
 ```typescript
+import { defineWalletSetup } from '@synthetixio/synpress'
 import { 
   MetaMask, // [!code focus]
-  defineWalletSetup 
-} from '@synthetixio/synpress'
+} from '@synthetixio/synpres/playwright'
 
 const SEED_PHRASE = 'test test test test test test test test test test test junk'
 const PASSWORD = 'Password123'
@@ -81,10 +83,8 @@ This is due to the fact that MetaMask only allows you to import a wallet from a 
 Here's how to do it:
 
 ```typescript
-import { 
-  MetaMask,
-  defineWalletSetup 
-} from '@synthetixio/synpress'
+import { defineWalletSetup } from '@synthetixio/synpress'
+import { MetaMask } from '@synthetixio/synpress/playwright'
 
 const SEED_PHRASE = 'test test test test test test test test test test test junk'
 const PASSWORD = 'Password123'
@@ -135,7 +135,8 @@ Let's start with the basics.
 Here's the wallet setup file from the previous section:
 
 ```typescript basic.setup.ts
-import { MetaMask, defineWalletSetup } from '@synthetixio/synpress'
+import { defineWalletSetup } from '@synthetixio/synpress'
+import { MetaMask } from '@synthetixio/synpress/playwright'
 
 const SEED_PHRASE = 'test test test test test test test test test test test junk'
 const PASSWORD = 'Password123'
@@ -162,7 +163,8 @@ Each cache is saved in a separate directory named after the hash of the wallet s
     <Expandable title="details">
         <ResponseField name='Code'>
             ```typescript
-            import { MetaMask, defineWalletSetup } from '@synthetixio/synpress'
+            import { defineWalletSetup } from '@synthetixio/synpress'
+            import { MetaMask } from '@synthetixio/synpress/playwright'
 
             const SEED_PHRASE = 'test test test test test test test test test test test junk'
             const PASSWORD = 'Password123'
@@ -189,7 +191,8 @@ The hash is generated **ONLY** from the contents of the function you pass to the
 Based on the wallet setup above, only the following lines will be used to generate the hash:
 
 ```typescript
-import { MetaMask, defineWalletSetup } from '@synthetixio/synpress'
+import { defineWalletSetup } from '@synthetixio/synpress'
+import { MetaMask } from '@synthetixio/synpress/playwright'
 
 const SEED_PHRASE = 'test test test test test test test test test test test junk'
 const PASSWORD = 'Password123'
@@ -206,7 +209,8 @@ If you change anything in the highlighted code above, the hash will change, and 
 For example, let's say we get rid of the `SEED_PHRASE` constant and inline it like this:
 
 ```typescript
-import { MetaMask, defineWalletSetup } from '@synthetixio/synpress'
+import { defineWalletSetup } from '@synthetixio/synpress'
+import { MetaMask } from '@synthetixio/synpress/playwright'
 
 const PASSWORD = 'Password123'
 
