@@ -33,7 +33,6 @@ This guide provides a quick setup process for Playwright with Synpress to automa
    ```typescript
    // Import necessary Playwright and Synpress modules
    import { defineConfig, devices } from "@playwright/test";
-   import { synpressFixtures } from "@synthetixio/synpress/synpress";
 
    // Define Playwright configuration
    export default defineConfig({
@@ -62,7 +61,7 @@ This guide provides a quick setup process for Playwright with Synpress to automa
 
    ```typescript
    import { defineWalletSetup } from "@synthetixio/synpress-cache";
-   import { MetaMask } from "@synthetixio/synpress";
+   import { MetaMask } from "@synthetixio/synpress/playwright";
 
    // Define a test seed phrase and password
    export const SEED_PHRASE =
@@ -88,11 +87,11 @@ This guide provides a quick setup process for Playwright with Synpress to automa
 
    ```typescript
    // Import necessary Synpress modules and setup
+   import { testWithSynpress } from "@synthetixio/synpress";
    import {
-     testWithSynpress,
      MetaMask,
      unlockForFixture,
-   } from "@synthetixio/synpress";
+   } from "@synthetixio/synpress/playwright";
    import BasicSetup from "../wallet-setup/basic.setup";
 
    // Create a test instance with Synpress and BasicSetup

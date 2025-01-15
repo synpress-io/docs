@@ -10,7 +10,8 @@ However, we've added a special `--debug` flag to our CLI, which will turn off th
 Let's take the following wallet setup file and let's assume that it doesn't work:
 
 ```typescript
-import { MetaMask, defineWalletSetup } from '@synthetixio/synpress'
+import { defineWalletSetup } from '@synthetixio/synpress'
+import { MetaMask } from '@synthetixio/synpress/playwright'
 import 'dotenv/config'
 
 const SEED_PHRASE = process.env.SEED_PHRASE
@@ -30,7 +31,8 @@ You want to debug it because you can't figure out why it's not working.
 To do that, you'd start by checking whether the `SEED_PHRASE` and `PASSWORD` constants are correctly defined by adding two `console.log` statements:
 
 ```typescript
-import { MetaMask, defineWalletSetup } from '@synthetixio/synpress'
+import { defineWalletSetup } from '@synthetixio/synpress'
+import { MetaMask } from '@synthetixio/synpress/playwright'
 import 'dotenv/config'
 
 const SEED_PHRASE = process.env.SEED_PHRASE
