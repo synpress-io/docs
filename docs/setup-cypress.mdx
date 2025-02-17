@@ -15,7 +15,7 @@ This guide provides a streamlined setup process for integrating Cypress with Syn
 Install Cypress and Synpress in your project:
 
 ```bash
-npm install --save-dev cypress @synthetixio/synpress@latest
+npm install --save-dev cypress @synthetixio/synpress
 ```
 
 ## Setup
@@ -23,38 +23,44 @@ npm install --save-dev cypress @synthetixio/synpress@latest
 1. Create a Cypress configuration file (`cypress.config.ts`) in your project root:
 
    ```typescript
-   import { configureSynpressForMetaMask } from "@synthetixio/synpress/cypress";
-   import { defineConfig } from "cypress";
+   // Import necessary Cypress and Synpress modules
+   import { configureSynpressForMetaMask } from '@synthetixio/synpress/cypress'
+   import { defineConfig } from 'cypress'
 
+   // Define Cypress configuration
    export default defineConfig({
      chromeWebSecurity: true,
      e2e: {
-       baseUrl: "http://localhost:9999",
-       specPattern: "test/cypress/**/*.cy.{js,jsx,ts,tsx}",
-       supportFile: "src/cypress/support/e2e.{js,jsx,ts,tsx}",
+       baseUrl: 'http://localhost:9999',
+       specPattern: 'test/cypress/**/*.cy.{js,jsx,ts,tsx}',
+       supportFile: 'src/cypress/support/e2e.{js,jsx,ts,tsx}',
        testIsolation: false,
        async setupNodeEvents(on, config) {
-         return configureSynpressForMetaMask(on, config);
+         return configureSynpressForMetaMask(on, config)
        },
      },
-   });
+   })
    ```
 
-2. Create a support file (`src/cypress/support/e2e.ts`) and import Synpress commands:
+2. Create a support file (`src/cypress/support/e2e.ts`):
 
    ```typescript
-   import { synpressCommandsForMetaMask } from "@synthetixio/synpress/cypress/support";
+   // Import Synpress commands for MetaMask
+   import { synpressCommandsForMetaMask } from '@synthetixio/synpress/cypress/support'
 
-   Cypress.on("uncaught:exception", () => {
-     // failing the test
-     return false;
-   });
+   // Handle uncaught exceptions
+   Cypress.on('uncaught:exception', () => {
+     // returning false here prevents Cypress from failing the test
+     return false
+   })
 
-   synpressCommandsForMetaMask();
+   // Initialize Synpress commands
+   synpressCommandsForMetaMask()
 
+   // Visit the base URL before each test
    before(() => {
-     cy.visit("/");
-   });
+     cy.visit('/')
+   })
    ```
 
 3. Update your `tsconfig.json` to include Cypress types:
@@ -72,20 +78,20 @@ npm install --save-dev cypress @synthetixio/synpress@latest
 
 ## Writing Tests
 
-Here's an optimized example of how to write tests using Cypress with Synpress integration:
+Here's an example of how to write tests using Cypress with Synpress:
 
-1. Create a new test file (e.g., `test/cypress/e2e/metamask.cy.ts`):
+1. Create a test file (e.g., `test/cypress/e2e/metamask.cy.ts`):
 
    ```typescript
-   describe('MetaMask', () => {
-     it('should connect wallet and display account information', () => {
-       // Click the connect button to initiate wallet connection
+   describe('MetaMask Integration', () => {
+     it('should connect wallet and verify account', () => {
+       // Click the connect button
        cy.get('#connectButton').click()
 
-       // Use Synpress command to connect MetaMask to the dApp
+       // Connect MetaMask to the dApp
        cy.connectToDapp()
 
-       // Verify that the connected account address is displayed correctly
+       // Verify the connected account address
        cy.get('#accounts').should(
          'have.text',
          '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266'
@@ -103,24 +109,18 @@ Here's an optimized example of how to write tests using Cypress with Synpress in
 
 To run your Cypress tests with Synpress:
 
-1. Ensure your local development server is running (if testing against a local app).
+1. Start your local development server (if testing against a local app).
 
-2. Run the tests using the following command:
+2. Run the tests:
 
    ```bash
    npx cypress run --browser chrome --headed
    ```
 
-This will execute your tests using Cypress with Synpress integration in headless mode.
+This will execute your tests using Cypress with Synpress integration.
 
 ## Next Steps
 
-- Dive deeper into Synpress capabilities:
-
-  - Study the [Synpress API documentation](/api-reference/) for comprehensive command and utility details.
-  - Explore advanced features like custom network management, gas fee optimization, and event listeners.
-
-- Enhance your test suite:
-  - Implement complex scenarios such as token transfers, smart contract interactions, and multi-step dApp workflows.
-  - Simulate various network conditions to ensure robust dApp performance.
-  - Utilize Synpress's built-in commands for MetaMask interactions and blockchain operations.
+- Explore the [API documentation](/api-reference/) for detailed Synpress functionalities
+- Check out example projects in the [Synpress GitHub repository](https://github.com/Synthetixio/synpress/tree/dev/examples)
+- Join our [Discord community](https://discord.gg/XhZKSRGtWc) for support and best practices
