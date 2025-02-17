@@ -1,5 +1,5 @@
 ---
-title: "Playwright"
+title: 'Playwright'
 ---
 
 Integrating Synpress into Playwright is quite straightforward.
@@ -8,156 +8,188 @@ Let's digest a simple test step by step:
 
 ```typescript example.spec.ts
 import { testWithSynpress } from '@synthetixio/synpress'
-import { MetaMask, unlockForFixture } from '@synthetixio/synpress/playwright'
-import BasicSetup from '../wallet-setup/basic.setup'
+import { MetaMask, metaMaskFixtures } from '@synthetixio/synpress/playwright'
+import basicSetup from '../wallet-setup/basic.setup'
 
-const test = testWithSynpress(BasicSetup, unlockForFixture)
+// Create a test instance with Synpress and MetaMask fixtures
+const test = testWithSynpress(metaMaskFixtures(basicSetup))
 
 const { expect } = test
 
-test('should connect wallet to the MetaMask Test Dapp', async ({ context, page, extensionId }) => {
-  const metamask = new MetaMask(context, page, BasicSetup.walletPassword, extensionId)
+test('should connect wallet to the MetaMask Test Dapp', async ({
+  context,
+  page,
+  metamaskPage,
+  extensionId,
+}) => {
+  // Create a new MetaMask instance
+  const metamask = new MetaMask(
+    context,
+    metamaskPage,
+    basicSetup.walletPassword,
+    extensionId
+  )
 
+  // Navigate to the homepage
   await page.goto('/')
 
+  // Click the connect button
   await page.locator('#connectButton').click()
-  await metamask.connectToDapp()
-  await expect(page.locator('#accounts')).toHaveText('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266')
 
-  await page.locator('#getAccounts').click()
-  await expect(page.locator('#getAccountsResult')).toHaveText('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266')
+  // Connect MetaMask to the dapp
+  await metamask.connectToDapp()
+
+  // Verify the connected account address
+  await expect(page.locator('#accounts')).toHaveText(
+    '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266'
+  )
 })
 ```
 
 ## Import
 
-First, you need to import the `testWithSynpress` function from `@synthetixio/synpress` and use it to define your `test` function that you'd typically import directly from Playwright:
+First, you need to import the necessary modules and setup:
 
 ```typescript
 import { testWithSynpress } from '@synthetixio/synpress'
-import { MetaMask, unlockForFixture } from '@synthetixio/synpress/playwright'
-import BasicSetup from '../wallet-setup/basic.setup'
+import { MetaMask, metaMaskFixtures } from '@synthetixio/synpress/playwright'
+import basicSetup from '../wallet-setup/basic.setup'
 
-const test = testWithSynpress(BasicSetup, unlockForFixture)
+const test = testWithSynpress(metaMaskFixtures(basicSetup))
 ```
 
-The first argument of the `testWithSynpress` function is the wallet setup function you want to use in this test file.
-
-The second argument is a function that will be used to unlock the wallet before each test. Currently, you have to pass the `unlockForFixture` function from `@synthetixio/synpress/playwright` which unlocks the MetaMask wallet, but soon you'll be able to pass here unlock functions from other wallets!
+The `testWithSynpress` function takes the MetaMask fixtures as an argument, which includes your wallet setup configuration. This setup defines how your wallet should be configured before each test.
 
 ## Define your test
 
-Now that you have access to the `test` function that you'd typically import from Playwright, you can use it to define your test:
+Now that you have your test instance configured, you can write your test:
 
 ```typescript
 const { expect } = test
 
-test('should connect wallet to the MetaMask Test Dapp', async ({ context, page, extensionId }) => {
-  const metamask = new MetaMask(context, page, BasicSetup.walletPassword, extensionId)
+test('should connect wallet to the MetaMask Test Dapp', async ({
+  context,
+  page,
+  metamaskPage,
+  extensionId,
+}) => {
+  // Create a new MetaMask instance
+  const metamask = new MetaMask(
+    context,
+    metamaskPage,
+    basicSetup.walletPassword,
+    extensionId
+  )
 
+  // Navigate to the homepage
   await page.goto('/')
 
+  // Click the connect button
   await page.locator('#connectButton').click()
-  await metamask.connectToDapp()
-  await expect(page.locator('#accounts')).toHaveText('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266')
 
-  await page.locator('#getAccounts').click()
-  await expect(page.locator('#getAccountsResult')).toHaveText('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266')
+  // Connect MetaMask to the dapp
+  await metamask.connectToDapp()
+
+  // Verify the connected account address
+  await expect(page.locator('#accounts')).toHaveText(
+    '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266'
+  )
 })
 ```
 
-You can notice the unusual `extensionId` fixture used here. This fixture is amongst a few others that are provided by Synpress. You can learn more about them in the [Built-in Fixtures](./fixtures) section.
+The test uses several fixtures provided by Synpress:
+- `context`: Playwright browser context
+- `page`: The page where your dApp is running
+- `metamaskPage`: The MetaMask extension page
+- `extensionId`: The ID of the MetaMask extension
 
-To access the MetaMask API, you must create an instance of the `MetaMask` class as shown above. To learn more about the constructor and all the methods this class provides, see [its API reference](../../api-reference/playwright/classes/MetaMask).
+You can learn more about them in the [Built-in Fixtures](./fixtures) section.
+
+To interact with MetaMask, create an instance of the `MetaMask` class. For detailed information about the constructor and available methods, see the [MetaMask API reference](../../api-reference/playwright/classes/MetaMask).
 
 <Tip>
     If you're using the same wallet setup in multiple test files, you can speed up the process of writing your tests by defining a custom fixture that will create the `MetaMask` instance for you.
 
-    💡 Show details below to see how to do it
-        <Expandable title="details">
-            <ResponseField name='Steps'>
-                1. Define the custom fixture in a separate file by extending the `testWithSynpress` function.
-                2. Use this new instance in your test file.
-            </ResponseField>
-            <ResponseField name='Code'>
-                <CodeGroup>
-                    ```typescript testWithMetaMask.ts
-                    import { testWithSynpress } from '@synthetixio/synpress'
-                    import { MetaMask, unlockForFixture } from '@synthetixio/synpress/playwright'
+    <Expandable title="details">
+        <ResponseField name='Steps'>
+            1. Create a custom fixture file that extends `testWithSynpress`
+            2. Use this fixture in your test files
+        </ResponseField>
+        <ResponseField name='Code'>
+            <CodeGroup>
+                ```typescript testWithMetaMask.ts
+                import { testWithSynpress } from '@synthetixio/synpress'
+                import { MetaMask, metaMaskFixtures } from '@synthetixio/synpress/playwright'
+                import connectedSetup from './wallet-setup/connected.setup'
 
-                    import connectedSetup from './wallet-setup/connected.setup'
+                export const testWithMetaMask = testWithSynpress(metaMaskFixtures(connectedSetup)).extend<{
+                  metamask: MetaMask
+                }>({
+                  metamask: async ({ context, metamaskPage, extensionId }, use) => {
+                    const metamask = new MetaMask(
+                      context,
+                      metamaskPage,
+                      connectedSetup.walletPassword,
+                      extensionId
+                    )
+                    await use(metamask)
+                  },
+                })
+                ```
 
-                    export const testWithMetaMask = testWithSynpress(connectedSetup, unlockForFixture).extend<{
-                    metamask: MetaMask
-                    }>({
-                        metamask: async ({ context, metamaskPage, extensionId }, use) => {
-                            const metamask = new MetaMask(context, metamaskPage, connectedSetup.walletPassword, extensionId)
+                ```typescript example.spec.ts
+                import { testWithMetaMask as test } from './testWithMetaMask'
 
-                            await use(metamask)
-                        }
-                    })
-                    ```
+                const { expect } = test
 
-                    ```typescript basic_1.spec.ts
-                    import { testWithMetaMask as test } from './testWithMetaMask'
+                test('should connect wallet to dApp', async ({ context, page, extensionId, metamask }) => {
+                  await page.goto('/')
+                  await page.locator('#connectButton').click()
+                  await metamask.connectToDapp()
+                  await expect(page.locator('#accounts')).toHaveText('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266')
+                })
+                ```
 
-                    const { expect } = test;
+                ```typescript multiple-accounts.spec.ts
+                import { testWithMetaMask as test } from './testWithMetaMask'
 
-                    // The `MetaMask` instance is now available in the test context.
-                    test('should connect wallet to dapp', async ({ context, page, extensionId, metamask }) => {
-                        await page.goto('/');
+                const { expect } = test
 
-                        await page.locator('#connectButton').click();
-                        
-                        await metamask.connectToDapp();
-
-                        await expect(page.locator('#accounts')).toHaveText('0xdeadbeef');
-                    })
-                    ```
-
-                    ```typescript basic_2.spec.ts
-                    import { testWithMetaMask as test } from './testWithMetaMask';
-
-                    const { expect } = test;
-
-                    // The `MetaMask` instance is now available in the test context.
-                    test('should connect multiple wallets to dapp', async ({ context, page, extensionId, metamask }) => {
-                        await page.goto('/');
-
-                        await page.locator('#connectButton').click();
-
-                        await metamask.connectToDapp(['0xdeadbeef1', '0xdeadbeef2']);
-
-                        await expect(page.locator('#accounts')).toHaveText('0xdeadbeef1,0xdeadbeef2');
-
-                    });
-                    ```
-                </CodeGroup>
-            </ResponseField>
-        </Expandable>
+                test('should connect multiple accounts', async ({ context, page, extensionId, metamask }) => {
+                  await page.goto('/')
+                  await page.locator('#connectButton').click()
+                  await metamask.connectToDapp(['0xaccount1', '0xaccount2'])
+                  await expect(page.locator('#accounts')).toHaveText('0xaccount1,0xaccount2')
+                })
+                ```
+            </CodeGroup>
+        </ResponseField>
+    </Expandable>
 </Tip>
 
+## Running Tests
 
-## Run the test
-
-Now that you have your test defined, you can run it as you would typically do with Playwright:
+To run your tests:
 
 ```bash
-playwright test
+npx playwright test
 ```
 
 <Warning>
-    In the current stage of Synpress development, the `playwright test` command will behave differently than you might expect, i.e., it will run in the headed mode by default, similarly to `playwright test --headed`.
-
-    To run your tests in the headless mode, you need to use the `HEADLESS` environmental variable:
+    Currently, Synpress runs tests in headed mode by default (like `playwright test --headed`).
+    To run in headless mode, set the `HEADLESS` environment variable:
 
     ```bash
-    HEADLESS=true
+    HEADLESS=true npx playwright test
     ```
 
-    This behavior will be changed in the future to resemble Playwright's default behavior.
+    This default behavior will be changed in a future release to match Playwright's standard behavior.
 </Warning>
 
 <Tip>
-    Synpress now supports **all** features of Playwright, including [Parallelism](https://playwright.dev/docs/test-parallel) and [UI Mode](https://playwright.dev/docs/test-ui-mode)!
+    Synpress supports all Playwright features, including:
+    - [Parallel test execution](https://playwright.dev/docs/test-parallel)
+    - [UI Mode](https://playwright.dev/docs/test-ui-mode)
+    - [Test retries](https://playwright.dev/docs/test-retries)
+    - [Fixtures](https://playwright.dev/docs/test-fixtures)
 </Tip>
