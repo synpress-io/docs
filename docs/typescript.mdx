@@ -1,23 +1,83 @@
 ---
-title: 'TypeScript'
-description: 'TypeScript Support in Synpress'
+title: TypeScript Support
+description: TypeScript Support in Synpress
 ---
 
-## Requirements and Considerations
+# TypeScript Support
 
-Synpress offers comprehensive TypeScript support, being built with TypeScript and providing its own type definitions. Here are some key points to consider:
+Synpress is built with TypeScript and provides comprehensive type definitions, offering a first-class TypeScript development experience.
 
-- **TypeScript Version**: Synpress requires TypeScript version 5.0.4 or higher.
-- **Version Stability**: Synpress is now a stable release, with consistent type definitions across versions. However, it's still recommended to specify the version of `@synthetixio/synpress` in your project for better control over updates.
+## Requirements
 
-## Configuration
+*   **TypeScript:** Synpress requires TypeScript version 5.0.4 or higher.
+*   **Synpress:** While Synpress v4 aims for stability.  Pinning a specific version of `@synthetixio/synpress` in your `package.json` is highly recommended to avoid unexpected issues from breaking changes.  Use a specific version like `"@synthetixio/synpress": "4.0.5"` rather than `"@synthetixio/synpress": "^4.0.0"`.
+*   **ESM:** Synpress is now an ESM-only package. Don't use `require()` to import it, and make sure your nearest `package.json` contains `"type": "module"`.
 
-To ensure optimal functionality and type checking, configure your TypeScript compiler with the `strict` option enabled. Update your `tsconfig.json` as follows:
+## Configuration (`tsconfig.json`)
 
-```
+For optimal type checking and developer experience, enable the `strict` compiler option in your `tsconfig.json`:
+
+```json
 {
   "compilerOptions": {
-    "strict": true
-  }
+    "strict": true,       // Enable strict type checking
+    "esModuleInterop": true, // Recommended for better interop with CommonJS modules
+    "target": "ES2022",      // Or a compatible target for your project
+    "module": "ES2022",       // Or a compatible module format
+    "moduleResolution": "bundler", // Or a compatible module resolution strategy
+
+    // ... other options ...
+  },
+    // ... include, files, etc.
 }
 ```
+
+**Explanation of Important Options:**
+
+*   **`strict: true`:** This enables a wide range of type-checking rules that help catch errors early and improve code quality.  It's highly recommended for any TypeScript project.
+*   **`esModuleInterop: true`**: This setting improves the interoperability between the different modules and is mandatory for the latest versions of Synpress.
+*   **`target` and `module`**: The settings you have are probably OK. If you are getting compilation errors, make sure, that the correct module is used.
+*   **`"moduleResolution": "bundler"`:** If you're using a modern bundler (like Vite, Webpack, or Rollup), `"bundler"` is the recommended setting.
+
+**Example `tsconfig.json` (for a Playwright project):**
+
+```json
+{
+  "extends": "@synthetixio/synpress-tsconfig/base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "esModuleInterop": true,
+    "exactOptionalPropertyTypes": false, // Allows for `undefined` in `playwright.config.ts`
+    "types": ["cypress"],
+    "sourceMap": false
+  },
+  "include": ["cypress.config.ts", "test", "src"],
+  "files": ["environment.d.ts"]
+}
+
+```
+Make sure that you have correct `include` and `files` arrays, that will point to all relevant files.
+
+**Example `tsconfig.json` (for a Cypress project):**
+
+```json
+{
+  "extends": "@synthetixio/synpress-tsconfig/base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["cypress"]
+  },
+  "include": ["cypress.config.ts", "test", "src"],
+  "files": ["environment.d.ts"]
+}
+```
+Make sure that you have correct `include` and `files` arrays, that will point to all relevant files.
+
+By following these guidelines, you'll ensure that your Synpress project benefits from the full power of TypeScript, including strong type checking, autocompletion, and improved code maintainability.
