@@ -1,257 +1,271 @@
 ---
-title: Migration Guide
+title: Migration Guide - Synpress v3 to v4 (Cypress)
 ---
 
-###  Synpress v3 to v4
-Synpress v4 introduces significant improvements in functionality, performance, and API design. This guide will help you seamlessly transition your tests from v3 to v4.
+# Migrating from Synpress v3 to v4 (Cypress)
 
+Synpress v4 represents a significant architectural shift, introducing major improvements in performance, stability, and developer experience.  This guide focuses on migrating your existing **Cypress** tests from Synpress v3 to v4.
 
-<Warning>
-This migration guide is particularly for Cypress users. If you're using Playwright with Synpress, please refer to the [Playwright-specific documentation](./setup-playwright).
-</Warning>
+::: warning
+This guide is specifically for users migrating Cypress tests.  If you are using Playwright, refer to the [Playwright setup guide](./setup-playwright).
+:::
 
+## Key Changes and Improvements
 
+v4's core change is the **browser caching mechanism**. Instead of setting up MetaMask for each test, v4 pre-configures a browser instance and reuses it, leading to drastically faster test runs.  This also enables full support for Playwright.
 
-## Key Changes Overview
+Here's a summary of the most important changes:
 
-1. **Installation**: Unchanged
-2. **Configuration**: New MetaMask-specific setup
-3. **Support Files**: More granular command imports
-4. **TypeScript Configuration**: Written in TypeScript to improve compatibility and readability
-5. **Test Structure**: Simplified with automatic page visits
-6. **MetaMask Interactions**: Renamed and enhanced commands
-7. **Test Execution**: Standardized Cypress command
-8. **Configuration Options**: Expanded for greater flexibility
+1.  **Installation:** The package name remains the same: `@synthetixio/synpress`.
 
-## Key Changes
+2.  **Configuration (`cypress.config.ts`):**  The setup within your Cypress configuration file has changed. You now use `configureSynpressForMetaMask` (or `configureSynpressForEthereumWalletMock`) to integrate Synpress.
 
-1. **Installation**:
+3.  **Support Files (`support/e2e.ts`):**  You now import specific command sets (`synpressCommandsForMetaMask` or `synpressCommandsForEthereumWalletMock`) instead of a global import.
 
-<Tabs>
-  <Tab title="pnpm">
+4.  **Test Structure:**  The automatic page visit in `before()` hook, which was a recommended approach, is now replaced with test isolation set to `false`.
+
+5.  **API Changes:** Several Cypress commands have been renamed or removed for clarity and consistency.  A detailed mapping is provided below.
+
+6.  **Test Execution:** You use the standard `cypress run` command, but **headed mode is currently required on CI**.
+
+7.  **Wallet Setup Files:** Synpress v4 introduces "wallet setup files" (`*.setup.{ts,js,mjs}`) to define how the wallet should be pre-configured (importing a seed phrase, adding networks, etc.).
+
+## Migration Steps
+
+### 1. Update Dependencies
+
+Update both `cypress` and `@synthetixio/synpress` to their latest versions.  Synpress v4 requires Cypress v13+.
+
+```bash
+pnpm update cypress @synthetixio/synpress --latest
+# OR
+npm update cypress @synthetixio/synpress --latest
+# OR
+yarn upgrade cypress @synthetixio/synpress --latest
+```
+
+### 2. Update `cypress.config.ts`
+
+Replace the old Synpress/Cypress configuration with the new `configureSynpressForMetaMask` function.  If you were using the Ethereum Wallet Mock, use `configureSynpressForEthereumWalletMock` instead.
+
+```typescript
+// cypress.config.ts
+import { defineConfig } from 'cypress';
+import { configureSynpressForMetaMask } from '@synthetixio/synpress/cypress';
+
+export default defineConfig({
+  chromeWebSecurity: false, // Keep this if you had it before
+  e2e: {
+    baseUrl: 'http://localhost:9999', // Adjust if your base URL is different
+    specPattern: 'test/cypress/**/*.cy.{js,jsx,ts,tsx}', // Adjust if your spec pattern is different
+    supportFile: 'src/cypress/support/e2e.{js,jsx,ts,tsx}', // Adjust if needed
+    testIsolation: false, // Important for reusing the cached browser context
+    setupNodeEvents(on, config) {
+      return configureSynpressForMetaMask(on, config);
+    },
+  },
+});
+```
+
+### 3. Update Support File (`src/cypress/support/e2e.ts`)
+
+Import `synpressCommandsForMetaMask` and remove any previous global imports of Synpress commands.
+Remove `cy.visit('/')`, because it's not needed, thanks to test isolation being set to `false`.
+
+```typescript
+// src/cypress/support/e2e.ts
+import { synpressCommandsForMetaMask } from '@synthetixio/synpress/cypress/support';
+
+// Optional: If you had custom error handling, keep it.
+Cypress.on('uncaught:exception', () => {
+  return false;
+});
+
+synpressCommandsForMetaMask();
+
+// REMOVE the before() hook with cy.visit('/');
+```
+If you use the Ethereum Wallet Mock, import the `mockEthereum` function and call it.
+
+```diff
+// src/cypress/support/e2e.ts
+- import { synpressCommandsForMetaMask } from '@synthetixio/synpress/cypress/support';
++ import { synpressCommandsForEthereumWalletMock, mockEthereum } from '@synthetixio/synpress/cypress/support'
+
+// Optional: If you had custom error handling, keep it.
+Cypress.on('uncaught:exception', () => {
+  return false;
+});
+
+- synpressCommandsForMetaMask();
++ synpressCommandsForEthereumWalletMock();
++ mockEthereum()
+```
+
+### 4. Update TypeScript Configuration (`tsconfig.json`)
+
+Ensure your `tsconfig.json` is configured for Cypress and includes the necessary files:
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "types": ["cypress"],
+    "esModuleInterop": true // Important for compatibility
+  },
+  "include": ["cypress.config.ts", "test", "src"],
+  "files": ["environment.d.ts"]
+}
+```
+
+Make sure `"strict": true` is set in the `compilerOptions`.
+
+### 5. Update Test Files
+
+*   **Update Commands:** Replace v3 commands with their v4 equivalents. See the "Detailed API Changes" section below for a comprehensive mapping.
+
+*   **Example:**
+
+    ```typescript
+    // Old v3 test
+    describe('My Test Suite', () => {
+      before(() => {
+        cy.visit('/');
+      });
+
+      it('should connect to MetaMask', () => {
+        cy.acceptMetamaskAccess(); // v3
+        cy.get('#someElement').should('be.visible');
+      });
+    });
+
+    // New v4 test
+    describe('My Test Suite', () => {
+      before(() => {
+        cy.visit('/');
+      });
+
+      it('should connect to MetaMask', () => {
+        cy.connectToDapp(); // v4
+        cy.get('#someElement').should('be.visible');
+      });
+    });
     ```
-    pnpm add @synthetixio/synpress@latest
+
+### 6. Create Wallet Setup Files (New in v4)
+
+This is a *crucial* step in Synpress v4.  You need to create one or more wallet setup files to define how MetaMask should be pre-configured.
+
+*   **Create a Directory:** By default, Synpress expects these files in `test/wallet-setup`.  You can change this using the Synpress CLI.
+
+*   **File Naming:**  Files *must* follow the pattern `*.setup.{ts,js,mjs}` (e.g., `basic.setup.ts`, `connected.setup.ts`).
+
+*   **File Content:** Use the `defineWalletSetup` function to define the setup steps.
+
+    ```typescript
+    // test/wallet-setup/basic.setup.ts
+    import { MetaMask, defineWalletSetup, getExtensionId } from '@synthetixio/synpress/playwright';
+    import 'dotenv/config';
+
+    const SEED_PHRASE = process.env.SEED_PHRASE;
+    const PASSWORD = process.env.WALLET_PASSWORD;
+
+    export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
+      const extensionId = await getExtensionId(context, 'MetaMask');
+      const metamask = new MetaMask(context, walletPage, PASSWORD, extensionId);
+
+      await metamask.importWallet(SEED_PHRASE);
+    });
+
     ```
-  </Tab>
-  <Tab title="npm">
-    ```
-    npm i @synthetixio/synpress@latest
-    ```
-  </Tab>
-  <Tab title="yarn">
-    ```
-    yarn add @synthetixio/synpress@latest
-    ```
-  </Tab>
-</Tabs>
+    This example imports a wallet using a seed phrase. You can customize this to:
 
-The installation process remains the same in v4.
+    *   Import from a private key.
+    *   Add custom networks.
+    *   Connect to a dapp (for a "pre-connected" state).
+    *   Change MetaMask settings.
+    * ...and anything else you can do within the MetaMask UI.
 
-2. **Configuration**:
+### 7. Build the Cache
 
-   - Update your `cypress.config.ts`:
+After creating your wallet setup files, you *must* build the cache using the Synpress CLI:
 
-     ```typescript
-     import { configureSynpressForMetaMask } from "@synthetixio/synpress/cypress";
-     import { defineConfig } from "cypress";
+```bash
+npx synpress
+# OR
+pnpm run synpress # If you have a script named 'synpress' in your package.json
+```
 
-     export default defineConfig({
-       chromeWebSecurity: true,
-       e2e: {
-         baseUrl: "http://localhost:9999",
-         specPattern: "test/cypress/**/*.cy.{js,jsx,ts,tsx}",
-         supportFile: "src/cypress/support/e2e.{js,jsx,ts,tsx}",
-         testIsolation: false,
-         async setupNodeEvents(on, config) {
-           return configureSynpressForMetaMask(on, config);
-         },
-       },
-     });
-     ```
+This command will:
 
-   The v4 configuration uses `configureSynpressForMetaMask` instead of the previous `cypressGrepPlugin`. This new function handles MetaMask-specific setup automatically.
+1.  Find your `*.setup.{ts,js,mjs}` files.
+2.  Generate a unique hash for each setup function.
+3.  Launch a browser instance for each unique setup.
+4.  Execute the setup function (installing MetaMask, importing the wallet, etc.).
+5.  Save the browser context (the cache) to the `.cache-synpress` directory.
 
-3. **Support Files**:
+**Important Cache Options:**
 
-   - Create or update `src/cypress/support/e2e.ts`:
+*   `--headless`: Run the cache building process in headless mode (no browser window visible).  Useful for local development to see what's happening.
+*   `--force`: Force a rebuild of the cache, even if a cache with the same hash already exists. Use this if you've made changes to your setup file or if you suspect the cache is corrupted.
+*  `--debug`: Enables additional logging during the cache building, and preserves logs.
+*   `[dir]`: Specify a custom directory containing the wallet setup files (defaults to `test/wallet-setup`).
 
-     ```typescript
-     import { synpressCommandsForMetaMask } from "@synthetixio/synpress/cypress/support";
+Example (headless, forced rebuild):
 
-     Cypress.on("uncaught:exception", () => {
-       // failing the test
-       return false;
-     });
+```bash
+npx synpress --headless --force
+```
 
-     synpressCommandsForMetaMask();
+### 8. Run Your Tests
 
-     before(() => {
-       cy.visit("/");
-     });
-     ```
+Now you can run your Cypress tests as usual. Synpress will automatically use the cached browser context.
 
-   In v4, you import `synpressCommandsForMetaMask` instead of the previous global import. This allows for more granular control over which commands are available in your tests.
+```bash
+npx cypress run --browser chrome --headed # Headed mode is required on CI
+```
 
-4. **TypeScript Configuration**:
+**Important:**
 
-   - Update your `tsconfig.json`:
-
-     ```json
-     {
-       "compilerOptions": {
-         "types": ["cypress"],
-         "esModuleInterop": true
-       },
-       "include": ["cypress.config.ts", "test", "src"],
-       "files": ["environment.d.ts"]
-     }
-     ```
-
-   The v4 TypeScript configuration is more streamlined, focusing on Cypress types and ensuring compatibility with ES modules.
-
-5. **Test Structure**:
-
-   - v4 no longer requires explicit `cy.visit()` calls in tests or `before()` hooks
-   - The initial page visit is now handled by the configuration step
-
-   This change simplifies test structure and further improves performance by eliminating redundant page loads.
-
-   Example:
-
-   ```typescript
-   describe("My Test Suite", () => {
-     it("Test 1", () => {
-       // Test logic here
-     });
-
-     it("Test 2", () => {
-       // Test logic here
-     });
-   });
-   ```
-
-   This approach is correct and aligns with Cypress best practices for optimizing test performance.
-
-6. **MetaMask Interactions**:
-
-   - Many MetaMask-specific commands have been renamed or modified for clarity and ease of use
-   - Examples of API changes:
-     ```typescript
-     // v3                                 // v4
-     cy.acceptMetamaskAccess()          -> cy.connectToDapp()
-     cy.confirmMetamaskTransaction()    -> cy.confirmTransaction()
-     cy.rejectMetamaskTransaction()     -> cy.rejectTransaction()
-     cy.switchMetamaskNetwork()         -> cy.switchNetwork()
-     cy.addMetamaskNetwork()            -> cy.addNetwork()
-     cy.importMetamaskAccount()         -> cy.importWallet()
-     cy.createMetamaskAccount()         -> // No direct equivalent in v4
-     cy.getMetamaskWalletAddress()      -> cy.getAccount()
-     cy.switchMetamaskAccount()         -> cy.switchAccount()
-     cy.getMetamaskBalance()            -> // No direct equivalent in v4
-     ```
-
-   Note: This list may not be exhaustive. It's recommended to check the latest Synpress v4 documentation for a complete list of API changes and new commands that may have been introduced.
-
-7. **Test Execution**:
-
-   - v3: Multiple commands to run tests
-   - v4: Simplified to use standard Cypress command:
-     ```
-     npx cypress run --browser chrome --headed
-     ```
-
-8. **Configuration**:
-   - v4: May introduce new configuration options for Synpress and MetaMask setup
+*   **Headed Mode on CI:** Due to a MetaMask issue, you *must* run tests in headed mode on CI.  Use a virtual display like `xvfb-run`. See the "Known Issues" page in the Synpress documentation.
 
 ## Detailed API Changes
 
-Here's a more detailed breakdown of the API changes between Synpress v3 and v4:
+This table summarizes the command changes from Synpress v3 to v4:
 
-1. **Connecting to dApps**:
-   - v3: `cy.acceptMetamaskAccess()`
-   - v4: `cy.connectToDapp()`
+| v3 Command                                    | v4 Command                                                                                   | Notes                                                                                                                                                                                                                               |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cy.acceptMetamaskAccess()`                    | `cy.connectToDapp()`                                                                         |                                                                                                                                                                                                                                     |
+| `cy.confirmMetamaskTransaction()`             | `cy.confirmTransaction()`                                                                    | Now supports optional `gasSetting` object for fine-grained gas control.                                                                                                                                                        |
+| `cy.rejectMetamaskTransaction()`              | `cy.rejectTransaction()`                                                                     |                                                                                                                                                                                                                                     |
+| `cy.switchMetamaskNetwork()`                   | `cy.switchNetwork()`                                                                      |                                                                                                                                                                                                                                     |
+| `cy.addMetamaskNetwork()`                      | `cy.addNetwork()`                                                                         |                                                                                                                                                                                                                                     |
+| `cy.importMetamaskAccount()`                   | `cy.importWallet()`                                                                       | Use for importing with a seed phrase.                                                                                                                                                                                             |
+| `cy.createMetamaskAccount()`                   | *No direct equivalent*                                                                     | Use `cy.addNewAccount` instead.                                                                                                                                                                                              |
+| `cy.getMetamaskWalletAddress()`                | `cy.getAccountAddress()`                                                                  |
+| `cy.switchMetamaskAccount()`                  | `cy.switchAccount()`                                                                      |                                                                                                                                                                                                                                     |
+| `cy.getMetamaskBalance()`                     | *No direct equivalent*                                                                     |  |
+|                                             | `cy.importWalletFromPrivateKey`    |Use for importing from private key.                                                                                                                                                                                  |
+| *Not Available in v3*                         | `cy.emptyAnvilNode()`                                                                   | Empties the Anvil node.                                                                                                                                                                                                   |
+| *Not Available in v3*                         | `cy.approveNewNetwork()`                                                                 | Approves a new network in MetaMask.                                                                                                                                                                                           |
+| *Not Available in v3*                         | `cy.approveSwitchNetwork()`                                                              | Approves switching to a different network in MetaMask.                                                                                                                                                                |
+| *Not Available in v3*                         | `cy.rejectNewNetwork()`                                                                  | Rejects a new network in MetaMask.                                                                                                                                                                                             |
+| *Not Available in v3*                         | `cy.rejectSwitchNetwork()`                                                               | Rejects switching to a different network in MetaMask.                                                                                                                                                                   |
+| *Not Available in v3*                         | `cy.deployToken()`                                                                       | Deploys a new token contract.                                                                                                                                                                                           |
+| *Not Available in v3*                         | `cy.addNewToken()`                                                                      | Adds a new token to MetaMask.                                                                                                                                                                                             |
+| *Not Available in v3*                         | `cy.approveTokenPermission()`                                                             | Approves token spending permission in MetaMask.                                                                                                                                                                      |
+| *Not Available in v3*                         | `cy.rejectTokenPermission()`                                                              | Rejects token spending permission in MetaMask.                                                                                                                                                                       |
+| *Not Available in v3*                         | `cy.toggleShowTestNetworks()`                                                             | Toggles the display of test networks in MetaMask.                                                                                                                                                                    |
+| *Not Available in v3*                         | `cy.toggleDismissSecretRecoveryPhraseReminder()`                                                 | Toggles the dismissal of the secret recovery phrase reminder.
+| *Not Available in v3*                        |`cy.providePublicEncryptionKey()` | Provides a public encryption key.                                                                                                                                             |
+| *Not Available in v3*                        | `cy.decrypt()`   | Decrypts a message.                                                 |
+| *Not Available in v3*                   | `cy.confirmSignature()`                                                                       | Confirms a signature request in MetaMask.                                                                                                                                                |
+| *Not Available in v3*                    | `cy.rejectSignature()`                                                                      | Rejects a signature request in MetaMask.                                                                                                                                                 |
+| *Not Available in v3*                         | `cy.confirmTransactionAndWaitForMining()`                                                   | Confirms a transaction and waits for it to be mined.                                                                                                                                                                   |
+| *Not Available in v3*                     | `cy.openTransactionDetails()`                                                                  | Opens transaction details in MetaMask.                                                                                                                   |
+| *Not Available in v3*                     | `cy.closeTransactionDetails()`                                                                 | Closes transaction details in MetaMask.                                                                                                                    |
+| *Not Available in v3*                        | `cy.goBackToHomePage()`      |  Goes back to MetaMask homepage. |
+| *Not Available in v3*                        | `cy.openSettings()`      |  Opens MetaMask settings page. |
+| *Not Available in v3*                        | `cy.openSidebarMenu()`      |  Opens a specific sidebar menu in MetaMask settings. |
 
-   This change simplifies the command name while maintaining its core functionality.
-
-2. **Transaction Handling**:
-   - v3: 
-     - `cy.confirmMetamaskTransaction()`
-     - `cy.rejectMetamaskTransaction()`
-   - v4: 
-     - `cy.confirmTransaction()`
-     - `cy.rejectTransaction()`
-
-   The new commands are more concise and remove the "Metamask" prefix for clarity.
-
-3. **Network Management**:
-   - v3:
-     - `cy.switchMetamaskNetwork()`
-     - `cy.addMetamaskNetwork()`
-   - v4:
-     - `cy.switchNetwork()`
-     - `cy.addNetwork()`
-
-   These changes streamline network-related commands by removing the "Metamask" prefix.
-
-4. **Wallet Management**:
-   - v3:
-     - `cy.importMetamaskAccount()`
-     - `cy.createMetamaskAccount()`
-     - `cy.switchMetamaskAccount()`
-   - v4:
-     - `cy.importWallet()`
-     - No direct equivalent for `createMetamaskAccount()`
-     - `cy.switchAccount()`
-
-   The v4 API simplifies wallet management commands and removes the ability to create new accounts directly.
-
-5. **Account Information**:
-   - v3:
-     - `cy.getMetamaskWalletAddress()`
-     - `cy.getMetamaskBalance()`
-   - v4:
-     - `cy.getAccount()`
-     - No direct equivalent for `getMetamaskBalance()`
-
-   The v4 API simplifies getting account information but removes the direct balance checking capability.
-
-6. **New Commands in v4**:
-   - `cy.emptyAnvilNode()`: Empties the Anvil node
-   - `cy.addNetwork()`: Adds a new network to MetaMask
-   - `cy.approveNewNetwork()`: Approves a new network in MetaMask
-   - `cy.approveSwitchNetwork()`: Approves switching to a different network in MetaMask
-   - `cy.rejectNewNetwork()`: Rejects a new network in MetaMask
-   - `cy.rejectSwitchNetwork()`: Rejects switching to a different network in MetaMask
-   - `cy.deployToken()`: Deploys a new token contract
-   - `cy.addNewToken()`: Adds a new token to MetaMask
-   - `cy.approveTokenPermission()`: Approves token spending permission in MetaMask
-   - `cy.rejectTokenPermission()`: Rejects token spending permission in MetaMask
-   - `cy.toggleShowTestNetworks()`: Toggles the display of test networks in MetaMask
-   - `cy.toggleDismissSecretRecoveryPhraseReminder()`: Toggles the dismissal of the secret recovery phrase reminder
-   - `cy.providePublicEncryptionKey()`: Provides a public encryption key
-   - `cy.decrypt()`: Decrypts encrypted data
-   - `cy.confirmSignature()`: Confirms a signature request in MetaMask
-   - `cy.rejectSignature()`: Rejects a signature request in MetaMask
-   - `cy.confirmTransactionAndWaitForMining()`: Confirms a transaction and waits for it to be mined
-   - `cy.openTransactionDetails()`: Opens transaction details in MetaMask
-   - `cy.closeTransactionDetails()`: Closes transaction details in MetaMask
-   - `cy.goBackToHomePage()`: Returns to the MetaMask home page
-   - `cy.openSettings()`: Opens MetaMask settings
-   - `cy.openSidebarMenu()`: Opens a specific sidebar menu in MetaMask settings
-
-Note: The `setupMetamask()` function is not present in the provided file. Some commands like `connectToDapp()`, `disconnectFromDapp()`, `switchNetwork()`, `lock()`, `unlock()`, `confirmTransaction()`, and `rejectTransaction()` were present in Synpress v3 and have been retained or slightly modified in v4. This list focuses on the new or significantly changed commands in v4.
-
-7. **Advanced Transaction Handling in v4**:
-   - `cy.confirmTransaction()` now supports advanced options:
-     ```typescript
-     cy.confirmTransaction({
-       gasSetting: 'low' | 'medium' | 'high' | {
-         maxBaseFee: number,
-         priorityFee: number,
-         gasLimit?: number
-       }
-     })
-     ```
-   This allows for more granular control over gas settings during transaction confirmation.
-
-When migrating from v3 to v4, carefully review your existing tests and update the commands according to these changes. Also, consult the latest Synpress v4 documentation for any additional new features or commands that may have been introduced.
+This migration guide should provide a solid foundation for transitioning your Cypress tests to Synpress v4. Remember to consult the official Synpress documentation and examples for the most up-to-date information and best practices.
