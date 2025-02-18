@@ -4,20 +4,42 @@ title: Known Issues
 
 ## Playwright
 
-The good news is we haven't encountered any significant issues with Playwright in all of our testing! However, we're aware of the following problems:
+Synpress and Playwright generally work well together. However, there are a couple of known limitations:
 
-### Blank MetaMask previews in traces
+### Blank MetaMask Previews in Traces
 
-When using Playwright UI mode or the HTML reporter, all previews of the MetaMask tab/popup traces are blank. This is due to MetaMask's LavaMoat security policy, and while we find it extremely annoying, we cannot do anything about it. 
+When using Playwright's UI mode or the HTML reporter, previews of MetaMask tabs and popups within the traces will appear blank. This is a consequence of MetaMask's [LavaMoat](https://github.com/LavaMoat/LavaMoat) security policy, which restricts access to the extension's content in these contexts.  Unfortunately, there's no direct workaround within Synpress itself.
 
-If you require the previews for development purposes, your only option is to compile MetaMask yourself from the source code and disable the LavaMoat policies. Hit us up on Discord if you need help with that.
+**Workarounds (if previews are *essential* for debugging):**
+
+*   **Use Pre-built MetaMask without LavaMoat:** We have prepared a build of MetaMask without LavaMoat that you can use: https://github.com/synpress-io/metamask-extension/releases
+*   **Build MetaMask from Source:** You can build a custom version of the MetaMask extension with LavaMoat disabled.  This is *not* recommended for general use or production, only for local debugging.  If you need assistance with this, reach out to the Synpress community on [Discord](https://discord.gg/XhZKSRGtWc).
+*   **Use Headful Mode on CI and locally:** While not ideal for CI, running tests in headed mode (`playwright test` or `HEADLESS=false playwright test`) will allow you to observe the MetaMask UI directly during test execution, which can help with debugging.
 
 ## MetaMask
 
-### MetaMask is not working in headless mode on GitHub Actions CI
+### Headless Mode Limitations on CI
 
-Due to a bug in MetaMask, it's impossible to run MetaMask in headless mode on GitHub Actions. We're certain this bug affects other CI providers, however, we have yet to test it.
+MetaMask has known compatibility issues with running in headless mode on certain CI providers, including GitHub Actions. This is due to a bug within MetaMask itself, not within Synpress.
 
-<Warning>
-You can run the tests in the headful mode on CI, and they will work just fine.
-</Warning>
+**Workaround:**
+
+*   **Run in Headful Mode on CI:** The recommended solution is to run your Synpress tests in *headed* mode on CI. This typically requires configuring your CI environment to use a virtual display (e.g., `xvfb-run` on Linux). See the [CI documentation](/docs/guides/ci.md) for detailed instructions.
+
+    ```yaml
+    # Example (GitHub Actions):
+    - name: Build cache
+      run: xvfb-run npx synpress
+
+    - name: Run E2E tests (headful)
+      run: xvfb-run npx playwright test
+    ```
+
+**Note:** We are actively monitoring for updates from MetaMask that might resolve this headless mode limitation.
+
+## Windows
+
+Currently, Synpress does not officially support Windows. We recommend using [WSL (Windows Subsystem for Linux)](https://learn.microsoft.com/en-us/windows/wsl/install) as a workaround.
+
+## Cypress
+Synpress offers experimental support for Cypress, however there are some issues, and you may encounter unexpected behaviour.
