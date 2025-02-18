@@ -162,7 +162,8 @@ This is a *crucial* step in Synpress v4.  You need to create one or more wallet 
 
     ```typescript
     // test/wallet-setup/basic.setup.ts
-    import { MetaMask, defineWalletSetup, getExtensionId } from '@synthetixio/synpress/playwright';
+    import { defineWalletSetup } from '@synthetixio/synpress'
+    import { MetaMask } from '@synthetixio/synpress/playwright'
     import 'dotenv/config';
 
     const SEED_PHRASE = process.env.SEED_PHRASE;
@@ -170,7 +171,7 @@ This is a *crucial* step in Synpress v4.  You need to create one or more wallet 
 
     export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
       const extensionId = await getExtensionId(context, 'MetaMask');
-      const metamask = new MetaMask(context, walletPage, PASSWORD, extensionId);
+      const metamask = new MetaMask(context, walletPage, PASSWORD);
 
       await metamask.importWallet(SEED_PHRASE);
     });
