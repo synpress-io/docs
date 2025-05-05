@@ -58,44 +58,88 @@ Finally, you need to define the wallet setup steps. This is done by calling the 
 
 The setup function is where the magic happens. Contents of this function will be executed in the browser context, which means you can use all browser-related Playwright APIs.
 
-Here's how you can import a wallet with MetaMask:
+Here's how you can import a wallet with MetaMask or Phantom:
 
-```typescript
-import { defineWalletSetup } from '@synthetixio/synpress'
-import { 
-  MetaMask, // [!code focus]
-} from '@synthetixio/synpres/playwright'
+<Tabs>
+  <Tab title="MetaMask">
+    ```typescript
+    import { defineWalletSetup } from '@synthetixio/synpress'
+    import { 
+      MetaMask, // [!code focus]
+    } from '@synthetixio/synpres/playwright'
 
-const SEED_PHRASE = 'test test test test test test test test test test test junk'
-const PASSWORD = 'Password123'
+    const SEED_PHRASE = 'test test test test test test test test test test test junk'
+    const PASSWORD = 'Password123'
 
-export default defineWalletSetup(PASSWORD, async (context, walletPage) => { // [!code focus]
-  const metamask = new MetaMask(context, walletPage, PASSWORD) // [!code focus]
+    export default defineWalletSetup(PASSWORD, async (context, walletPage) => { // [!code focus]
+      const metamask = new MetaMask(context, walletPage, PASSWORD) // [!code focus]
 
-  await metamask.importWallet(SEED_PHRASE) // [!code focus]
-}) // [!code focus]
-```
+      await metamask.importWallet(SEED_PHRASE) // [!code focus]
+    }) // [!code focus]
+    ```
+  </Tab>
+  <Tab title="Phantom">
+    ```typescript
+    import { defineWalletSetup } from '@synthetixio/synpress'
+    import { 
+      Phantom, // [!code focus]
+    } from '@synthetixio/synpres/playwright'
+
+    const SEED_PHRASE = 'test test test test test test test test test test test junk'
+    const PASSWORD = 'Tester@1234'
+
+    export default defineWalletSetup(PASSWORD, async (context, walletPage) => { // [!code focus]
+      const phantom = new Phantom(context, walletPage, PASSWORD) // [!code focus]
+
+      await phantom.importWallet(SEED_PHRASE) // [!code focus]
+    }) // [!code focus]
+    ```
+  </Tab>
+</Tabs>
+
+
 
 If, on the other hand, you want to use a wallet imported directly from a private key, you still have to import a seed phrase first and then import the wallet from a private key.
 
-This is due to the fact that MetaMask only allows you to import a wallet from a private key if MetaMask is already initialized with a seed phrase.
+This is due to the fact that MetaMask (and Phantom) only allows you to import a wallet from a private key if MetaMask (or Phantom) is already initialized with a seed phrase.
 
 Here's how to do it:
 
-```typescript
-import { defineWalletSetup } from '@synthetixio/synpress'
-import { MetaMask } from '@synthetixio/synpress/playwright'
+<Tabs>
+  <Tab title="MetaMask">
+    ```typescript
+    import { defineWalletSetup } from '@synthetixio/synpress'
+    import { MetaMask } from '@synthetixio/synpress/playwright'
 
-const SEED_PHRASE = 'test test test test test test test test test test test junk'
-const PASSWORD = 'Password123'
+    const SEED_PHRASE = 'test test test test test test test test test test test junk'
+    const PASSWORD = 'Password123'
 
-export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
-  const metamask = new MetaMask(context, walletPage, PASSWORD)
+    export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
+      const metamask = new MetaMask(context, walletPage, PASSWORD)
 
-  await metamask.importWallet(SEED_PHRASE)
-  await metamask.importWalletFromPrivateKey('0xdeadbeef') // [!code focus]
-})
-```
+      await metamask.importWallet(SEED_PHRASE)
+      await metamask.importWalletFromPrivateKey('0xdeadbeef') // [!code focus]
+    })
+    ```
+  </Tab>
+  <Tab title="Phantom">
+    ```typescript
+    import { defineWalletSetup } from '@synthetixio/synpress'
+    import { Phantom } from '@synthetixio/synpress/playwright'
+
+    const SEED_PHRASE = 'test test test test test test test test test test test junk'
+    const PASSWORD = 'Password123'
+
+    export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
+      const phantom = new Phantom(context, walletPage, PASSWORD)
+
+      await phantom.importWallet(SEED_PHRASE)
+      await phantom.importWalletFromPrivateKey('0xdeadbeef') // [!code focus]
+    })
+    ```
+  </Tab>
+</Tabs>
+
 ### Building the cache
 
 <Warning>
@@ -104,15 +148,33 @@ export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
 
 Once you've written your wallet setup file, you must build its cache. This is done with our CLI tool `synpress`. Here's how to do it:
 
-```bash
-synpress
-```
+<Tabs>
+  <Tab title="MetaMask">
+    ```bash
+    synpress
+    ```
+  </Tab>
+  <Tab title="Phantom">
+    ```bash
+    synpress --phantom
+    ```
+  </Tab>
+</Tabs>
 
 By default, the CLI expects the wallet setup files to be in the `[PROJECT_ROOT]/test/wallet-setup` directory. If you want to use a different one, you can pass it as an argument to the CLI:
 
-```bash
-synpress [PATH_TO_DIR_WITH_WALLET_SETUP_FILES]
-```
+<Tabs>
+  <Tab title="MetaMask">
+    ```bash
+    synpress [PATH_TO_DIR_WITH_WALLET_SETUP_FILES]
+    ```
+  </Tab>
+  <Tab title="Phantom">
+    ```bash
+    synpress [PATH_TO_DIR_WITH_WALLET_SETUP_FILES] --phantom
+    ```
+  </Tab>
+</Tabs>
 
 <Tip>
 Run `synpress --help` to see all available options.
@@ -134,19 +196,40 @@ Let's start with the basics.
 
 Here's the wallet setup file from the previous section:
 
-```typescript basic.setup.ts
-import { defineWalletSetup } from '@synthetixio/synpress'
-import { MetaMask } from '@synthetixio/synpress/playwright'
+<Tabs>
+  <Tab title="MetaMask">
+    ```typescript basic.setup.ts
+    import { defineWalletSetup } from '@synthetixio/synpress'
+    import { MetaMask } from '@synthetixio/synpress/playwright'
 
-const SEED_PHRASE = 'test test test test test test test test test test test junk'
-const PASSWORD = 'Password123'
+    const SEED_PHRASE = 'test test test test test test test test test test test junk'
+    const PASSWORD = 'Password123'
 
-export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
-  const metamask = new MetaMask(context, walletPage, PASSWORD)
+    export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
+      const metamask = new MetaMask(context, walletPage, PASSWORD)
 
-  await metamask.importWallet(SEED_PHRASE)
-})
-```
+      await metamask.importWallet(SEED_PHRASE)
+    })
+    ```
+  </Tab>
+  <Tab title="Phantom">
+    ```typescript basic.setup.ts
+    import { defineWalletSetup } from '@synthetixio/synpress'
+    import { Phantom } from '@synthetixio/synpress/playwright'
+
+    const SEED_PHRASE = 'test test test test test test test test test test test junk'
+    const PASSWORD = 'Password123'
+
+    export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
+      const phantom = new Phantom(context, walletPage, PASSWORD)
+
+      await phantom.importWallet(SEED_PHRASE)
+    })
+    ```
+  </Tab>
+</Tabs>
+
+
 
 When you run our CLI, it will first analyze the wallet setup file, generate a hash of its contents, and then check if the cache for this hash already exists. If it doesn't, it will open a browser, execute the setup function, and save the cache to the `[PROJECT_ROOT]/.cache-synpress` directory.
 
@@ -157,28 +240,52 @@ Each cache is saved in a separate directory named after the hash of the wallet s
 </Tip>
 
 <Warning>
-    IMPORTANT NOTE: If you intend to use MetaMask to send transactions, sign data, or do anything that requires interactions through the pop-up, you must adjust your wallet setup file by including its extension ID.
+    IMPORTANT NOTE: If you intend to use MetaMask or Phantom to send transactions, sign data, or do anything that requires interactions through the pop-up, you must adjust your wallet setup file by including its extension ID.
     
     💡 Show details below to see the adjusted wallet setup file
     <Expandable title="details">
         <ResponseField name='Code'>
-            ```typescript
-            import { defineWalletSetup } from '@synthetixio/synpress'
-            import { MetaMask } from '@synthetixio/synpress/playwright'
+            <Tabs>
+              <Tab title="MetaMask">
+                ```typescript
+                import { defineWalletSetup } from '@synthetixio/synpress'
+                import { MetaMask } from '@synthetixio/synpress/playwright'
 
-            const SEED_PHRASE = 'test test test test test test test test test test test junk'
-            const PASSWORD = 'Password123'
+                const SEED_PHRASE = 'test test test test test test test test test test test junk'
+                const PASSWORD = 'Password123'
 
-            export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
-            // This is a workaround for the fact that the MetaMask extension ID changes, and this ID is required to detect the pop-ups. // [!code focus]
-            // It won't be needed in the near future! 😇 // [!code focus]
-            const extensionId = await getExtensionId(context, 'MetaMask') // [!code focus]
+                export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
+                // This is a workaround for the fact that the MetaMask extension ID changes, and this ID is required to detect the pop-ups. // [!code focus]
+                // It won't be needed in the near future! 😇 // [!code focus]
+                const extensionId = await getExtensionId(context, 'MetaMask') // [!code focus]
 
-            const metamask = new MetaMask(context, walletPage, PASSWORD, extensionId) // [!code focus]
+                const metamask = new MetaMask(context, walletPage, PASSWORD, extensionId) // [!code focus]
 
-            await metamask.importWallet(SEED_PHRASE)
-            })
-            ```
+                await metamask.importWallet(SEED_PHRASE)
+                })
+                ```
+              </Tab>
+              <Tab title="Phantom">
+                ```typescript
+                import { defineWalletSetup } from '@synthetixio/synpress'
+                import { Phantom } from '@synthetixio/synpress/playwright'
+
+                const SEED_PHRASE = 'test test test test test test test test test test test junk'
+                const PASSWORD = 'Password123'
+
+                export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
+                // This is a workaround for the fact that the Phantom extension ID changes, and this ID is required to detect the pop-ups. // [!code focus]
+                // It won't be needed in the near future! 😇 // [!code focus]
+                const extensionId = await getExtensionId(context, 'Phantom') // [!code focus]
+
+                const phantom = new Phantom(context, walletPage, PASSWORD, extensionId) // [!code focus]
+
+                await phantom.importWallet(SEED_PHRASE)
+                })
+                ```
+              </Tab>
+            </Tabs>
+
         </ResponseField>
     </Expandable>
 
@@ -190,36 +297,76 @@ The hash is generated **ONLY** from the contents of the function you pass to the
 
 Based on the wallet setup above, only the following lines will be used to generate the hash:
 
-```typescript
-import { defineWalletSetup } from '@synthetixio/synpress'
-import { MetaMask } from '@synthetixio/synpress/playwright'
+<Tabs>
+  <Tab title="MetaMask">
+    ```typescript
+    import { defineWalletSetup } from '@synthetixio/synpress'
+    import { MetaMask } from '@synthetixio/synpress/playwright'
 
-const SEED_PHRASE = 'test test test test test test test test test test test junk'
-const PASSWORD = 'Password123'
+    const SEED_PHRASE = 'test test test test test test test test test test test junk'
+    const PASSWORD = 'Password123'
 
-export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
-  const metamask = new MetaMask(context, walletPage, PASSWORD) // [!code highlight]
-  // [!code highlight]
-  await metamask.importWallet(SEED_PHRASE) // [!code highlight]
-})
-```
+    export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
+      const metamask = new MetaMask(context, walletPage, PASSWORD) // [!code highlight]
+      // [!code highlight]
+      await metamask.importWallet(SEED_PHRASE) // [!code highlight]
+    })
+    ```
+  </Tab>
+  <Tab title="Phantom">
+    ```typescript
+    import { defineWalletSetup } from '@synthetixio/synpress'
+    import { Phantom } from '@synthetixio/synpress/playwright'
+
+    const SEED_PHRASE = 'test test test test test test test test test test test junk'
+    const PASSWORD = 'Password123'
+
+    export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
+      const phantom = new Phantom(context, walletPage, PASSWORD) // [!code highlight]
+      // [!code highlight]
+      await phantom.importWallet(SEED_PHRASE) // [!code highlight]
+    })
+    ```
+  </Tab>
+</Tabs>
+
 
 If you change anything in the highlighted code above, the hash will change, and the cache must be rebuilt.
 
 For example, let's say we get rid of the `SEED_PHRASE` constant and inline it like this:
 
-```typescript
-import { defineWalletSetup } from '@synthetixio/synpress'
-import { MetaMask } from '@synthetixio/synpress/playwright'
+<Tabs>
+  <Tab title="MetaMask">
+    ```typescript
+    import { defineWalletSetup } from '@synthetixio/synpress'
+    import { MetaMask } from '@synthetixio/synpress/playwright'
 
-const PASSWORD = 'Password123'
+    const PASSWORD = 'Password123'
 
-export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
-  const metamask = new MetaMask(context, walletPage, PASSWORD)
-  
-  await metamask.importWallet('test test test test test test test test test test test junk') // [!code focus]
-})
-```
+    export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
+      const metamask = new MetaMask(context, walletPage, PASSWORD)
+      
+      await metamask.importWallet('test test test test test test test test test test test junk') // [!code focus]
+    })
+    ```
+  </Tab>
+  <Tab title="Phantom">
+    ```typescript
+    import { defineWalletSetup } from '@synthetixio/synpress'
+    import { Phantom } from '@synthetixio/synpress/playwright'
+
+    const PASSWORD = 'Password123'
+
+    export default defineWalletSetup(PASSWORD, async (context, walletPage) => {
+      const phantom = new Phantom(context, walletPage, PASSWORD)
+      
+      await phantom.importWallet('test test test test test test test test test test test junk') // [!code focus]
+    })
+    ```
+  </Tab>
+</Tabs>
+
+
 
 This simple change will cause the hash to change, which means you'll have to rebuild the cache with the CLI.
 
